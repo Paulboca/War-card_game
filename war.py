@@ -62,19 +62,81 @@ class Cards:
     clubs_A = pygame.image.load('pictures/clubs/A.png')
 
 
+values = {
+    "spades_2": 2,
+    "spades_3": 3,
+    "spades_4": 4,
+    "spades_5": 5,
+    "spades_6": 6,
+    "spades_7": 7,
+    "spades_8": 8,
+    "spades_9": 9,
+    "spades_10": 10,
+    "spades_J": 12,
+    "spades_Q": 13,
+    "spades_K": 14,
+    "spades_A": 11,
+
+    "hearts_2": 2,
+    "hearts_3": 3,
+    "hearts_4": 4,
+    "hearts_5": 5,
+    "hearts_6": 6,
+    "hearts_7": 7,
+    "hearts_8": 8,
+    "hearts_9": 9,
+    "hearts_10": 10,
+    "hearts_J": 12,
+    "hearts_Q": 13,
+    "hearts_K": 14,
+    "hearts_A": 11,
+
+    "diamonds_2": 2,
+    "diamonds_3": 3,
+    "diamonds_4": 4,
+    "diamonds_5": 5,
+    "diamonds_6": 6,
+    "diamonds_7": 7,
+    "diamonds_8": 8,
+    "diamonds_9": 9,
+    "diamonds_10": 10,
+    "diamonds_J": 12,
+    "diamonds_Q": 13,
+    "diamonds_K": 14,
+    "diamonds_A": 11,
+
+    "clubs_2": 2,
+    "clubs_3": 3,
+    "clubs_4": 4,
+    "clubs_5": 5,
+    "clubs_6": 6,
+    "clubs_7": 7,
+    "clubs_8": 8,
+    "clubs_9": 9,
+    "clubs_10": 10,
+    "clubs_J": 12,
+    "clubs_Q": 13,
+    "clubs_K": 14,
+    "clubs_A": 11
+}
+
+
 pygame.init()
+font = pygame.font.SysFont("monospace", 16)
 screen = pygame.display.set_mode((1280, 720))
 
 deck = [card for card in dir(Cards) if not card.startswith("__")]
 random.shuffle(deck)
-deck_pc = Queue(26)
-deck_player = Queue(26)
+deck_pc = Queue(52)
+deck_player = Queue(52)
 
+i = 0
 for d in deck:
-    if deck_pc.full():
+    if i < 26:
         deck_player.put(d)
     else:
         deck_pc.put(d)
+    i += 1
 
 
 def game():
@@ -104,31 +166,48 @@ def game():
     screen.fill((0, 166, 43))
     # screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
 
+    card_pc = deck_pc.get()
+    screen.blit(pygame.transform.scale(getattr(Cards, card_pc), (card_width, card_height)), (pc_width, pc_height))
+
+    card_player = deck_player.get()
+    screen.blit(pygame.transform.scale(getattr(Cards, card_player), (card_width, card_height)), (player_width, player_height))
+    pygame.display.update()
+
     if not deck_pc.empty():
         screen.blit(pygame.transform.scale(back_blue, (card_width, card_height)), (deck_pc_width, deck_pc_height))
+
+    deck_pc_size = font.render("Cards in deck: "+str(deck_pc.qsize()), True, (0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), (deck_pc_width-15, deck_pc_height + card_height + 10, card_width+30, 20))
+    screen.blit(deck_pc_size, (deck_pc_width-15, deck_pc_height + card_height + 10))
+
     if not deck_player.empty():
         screen.blit(pygame.transform.scale(back_blue, (card_width, card_height)), (deck_player_width, deck_player_height))
+
+    deck_player_size = font.render("Cards in deck: " + str(deck_player.qsize()), True, (0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), (deck_player_width - 15, deck_player_height - 30, card_width + 30, 20))
+    screen.blit(deck_player_size, (deck_player_width - 15, deck_player_height - 30))
+
     pygame.display.update()
+
+    if values[card_pc] > values[card_player]:
+        deck_pc.put(card_player)
+        deck_pc.put(card_pc)
+
+    if values[card_player] >= values[card_pc]:  # de sters =
+        deck_player.put(card_player)
+        deck_player.put(card_pc)
 
     pygame.time.wait(500)
-
-    card = deck_pc.get()
-    screen.blit(pygame.transform.scale(getattr(Cards, card), (card_width, card_height)), (pc_width, pc_height))
-
-    # if not first:
-    card = deck_player.get()
-    screen.blit(pygame.transform.scale(getattr(Cards, card), (card_width, card_height)), (player_width, player_height))
-    pygame.display.update()
 
 
 running = True
 game()
 
-while running:
+while not deck_pc.empty() and not deck_player.empty():
     pygame.event.pump()
     event = pygame.event.wait()
     if event.type == QUIT:
-        running = False
+        exit(0)
     if event.type == pygame.MOUSEBUTTONDOWN:
         game()
 
