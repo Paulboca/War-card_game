@@ -75,7 +75,7 @@ values = {
     "spades_J": 12,
     "spades_Q": 13,
     "spades_K": 14,
-    "spades_A": 11,
+    "spades_A": 15,
 
     "hearts_2": 2,
     "hearts_3": 3,
@@ -89,7 +89,7 @@ values = {
     "hearts_J": 12,
     "hearts_Q": 13,
     "hearts_K": 14,
-    "hearts_A": 11,
+    "hearts_A": 15,
 
     "diamonds_2": 2,
     "diamonds_3": 3,
@@ -103,7 +103,7 @@ values = {
     "diamonds_J": 12,
     "diamonds_Q": 13,
     "diamonds_K": 14,
-    "diamonds_A": 11,
+    "diamonds_A": 15,
 
     "clubs_2": 2,
     "clubs_3": 3,
@@ -117,7 +117,7 @@ values = {
     "clubs_J": 12,
     "clubs_Q": 13,
     "clubs_K": 14,
-    "clubs_A": 11
+    "clubs_A": 15
 }
 
 
@@ -129,6 +129,8 @@ deck = [card for card in dir(Cards) if not card.startswith("__")]
 random.shuffle(deck)
 deck_pc = Queue(52)
 deck_player = Queue(52)
+deck_war = Queue(52)
+
 
 i = 0
 for d in deck:
@@ -140,6 +142,8 @@ for d in deck:
 
 
 def game():
+    global war, war_size
+
     icon = pygame.image.load('pictures/icon.png')
     # bg = pygame.image.load('pictures/bg.jpg')
 
@@ -190,26 +194,74 @@ def game():
     pygame.display.update()
 
     if values[card_pc] > values[card_player]:
-        deck_pc.put(card_player)
-        deck_pc.put(card_pc)
+        if war == 0:
+            deck_pc.put(card_player)
+            deck_pc.put(card_pc)
+        elif war == 1:
+            if deck_war.qsize()/2 < war_size:
+                deck_war.put(card_player)
+                deck_war.put(card_pc)
+            else:
+                war = 0
+                deck_war.put(card_player)
+                deck_war.put(card_pc)
+                while not deck_war.empty():
+                    deck_pc.put(deck_war.get())
 
-    if values[card_player] >= values[card_pc]:  # de sters =
-        deck_player.put(card_player)
-        deck_player.put(card_pc)
+    if values[card_player] > values[card_pc]:
+        if war == 0:
+            deck_player.put(card_player)
+            deck_player.put(card_pc)
+        elif war == 1:
+            if deck_war.qsize()/2 < war_size:
+                deck_war.put(card_player)
+                deck_war.put(card_pc)
+            else:
+                war = 0
+                deck_war.put(card_player)
+                deck_war.put(card_pc)
+                while not deck_war.empty():
+                    deck_player.put(deck_war.get())
 
-    pygame.time.wait(500)
+    # WAR
+    if values[card_player] == values[card_pc]:
+        if war == 0:
+            war = 1
+            if card_pc == "clubs_A" or card_pc == "diamonds_A" or card_pc == "hearts_A" or card_pc == "spades_A":
+                war_size = 11
+            else:
+                war_size = values[card_player]
+            deck_war.put(card_player)
+            deck_war.put(card_pc)
+        elif war == 1:
+            deck_war.put(card_player)
+            deck_war.put(card_pc)
+
+    # pygame.time.wait(500)
 
 
 running = True
+war = 0
+war_size = 0
 game()
 
-while not deck_pc.empty() and not deck_player.empty():
-    pygame.event.pump()
+while 1:
     event = pygame.event.wait()
     if event.type == QUIT:
         exit(0)
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        game()
+    while not deck_pc.empty() and not deck_player.empty():
+        pygame.event.pump()
+        event = pygame.event.wait()
+
+        if event.type == QUIT:
+            exit(0)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            game()
+
+        if deck_pc.empty():
+            print("Player wins !!")
+        if deck_player.empty():
+            print("PC wins !!")
 
     # elif event.type == VIDEORESIZE:
     #     card_width = int(screen.get_width() / 9)
