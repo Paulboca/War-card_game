@@ -351,3 +351,37 @@ while 1:
             winner = "PC"
             score_PC += 1
             break
+
+    while winner:
+        screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
+
+        title = font_war.render("PLAYER " + str(score_PLAYER) + " - " + str(score_PC) + " PC", True, (255, 255, 255))
+        pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.15, screen.get_height() * 0.25, 580, 100))
+        screen.blit(title, (screen.get_width() * 0.2, screen.get_height() * 0.28))
+
+        title = font_middle.render("Play again", True, (255, 255, 255))
+        pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.25, screen.get_height() * 0.5, 400, 100))
+        screen.blit(title, (screen.get_width() * 0.37, screen.get_height() * 0.54))
+
+        title = font_score.render("Exit", True, (255, 255, 255))
+        pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.76, screen.get_height() * 0.87, 190, 100))
+        screen.blit(title, (screen.get_width() * 0.84, screen.get_height() * 0.92))
+
+        pygame.display.update()
+
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            exit(0)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                x, y = pygame.mouse.get_pos()
+                if screen.get_width() * 0.76 <= x <= screen.get_width() * 0.76+190 and screen.get_height() * 0.87 <= y <= screen.get_height() * 0.87+100:
+                    exit(0)
+                if screen.get_width() * 0.25 <= x <= screen.get_width() * 0.25+400 and screen.get_height() * 0.5 <= y <= screen.get_height() * 0.5+100:
+                    first = True
+
+                    init_decks()
+                    game()
+                    show_score()
+
+                    winner = ""
