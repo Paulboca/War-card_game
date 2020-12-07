@@ -303,6 +303,13 @@ winner = ""
 
 screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
 
+title = font_title.render("W A R", True, (255, 255, 255))
+pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.15, screen.get_height() * 0.25, 580, 100))
+screen.blit(title, (screen.get_width() * 0.3, screen.get_height() * 0.25))
+
+title = font_score.render("Click to start", True, (255, 255, 255))
+pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.25, screen.get_height() * 0.75, 400, 100))
+screen.blit(title, (screen.get_width() * 0.37, screen.get_height() * 0.8))
 
 pygame.display.update()
 
@@ -310,6 +317,15 @@ while 1:
     event = pygame.event.wait()
     if event.type == QUIT:
         exit(0)
+
+    if score_PC == 0 and score_PLAYER == 0:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                first = True
+
+                init_decks()
+                game()
+                show_score()
 
     while not deck_pc.empty() and not deck_player.empty():
         pygame.event.pump()
