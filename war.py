@@ -282,6 +282,34 @@ def game():
                     deck_war.put(card_player)
                     deck_war.put(card_pc)
 
+    if war:
+        war_started = font_war.render("W A R", True, (219, 22, 22))
+        pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.4, screen.get_height()*0.32, 160, 60))
+        screen.blit(war_started, (screen.get_width() * 0.4, screen.get_height()*0.32))
+
+        war_size2 = war_size - int(deck_war.qsize()/2) + 1
+        if war_size2 <= war_size:
+            if war_size2 > 9:
+                war_started_size = font_war.render(str(war_size2), True, (219, 22, 22))
+                pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.38, screen.get_height() * 0.38, 190, 100))
+                screen.blit(war_started_size, (screen.get_width() * 0.46, screen.get_height() * 0.40))
+            else:
+                war_started_size = font_war.render(str(war_size2), True, (219, 22, 22))
+                pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.38, screen.get_height() * 0.38, 190, 100))
+                screen.blit(war_started_size, (screen.get_width() * 0.475, screen.get_height() * 0.40))
+
+    if war_winner:
+        if war_winner == "PC":
+            war_winner_name = font_war.render(war_winner + " WINS WAR", True, (219, 22, 22))
+            pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.25, screen.get_height() * 0.32, 400, 50))
+            screen.blit(war_winner_name, (screen.get_width() * 0.3, screen.get_height() * 0.32))
+        elif war_winner == "PLAYER":
+            war_winner_name = font_war.render(war_winner + " WINS WAR", True, (219, 22, 22))
+            pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.22, screen.get_height() * 0.32, 450, 50))
+            screen.blit(war_winner_name, (screen.get_width() * 0.23, screen.get_height() * 0.32))
+
+        war_winner = ""
+
     pygame.display.update()
 
 
