@@ -164,6 +164,7 @@ def game():
     back_blue = pygame.image.load('pictures/back_blue.png')
     # back_red = pygame.image.load('pictures/back_red.png')
 
+    # variables with sizes and positions of cards
     card_width = int(140)
     card_height = int(card_width * 1.25)
 
@@ -182,10 +183,13 @@ def game():
 
     screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
 
+    # show the cards drawn from the decks
     if not first:
+        # show PC card
         card_pc = deck_pc.get()
         screen.blit(pygame.transform.scale(getattr(Cards, card_pc), (card_width, card_height)), (pc_width, pc_height))
 
+        # show PLAYER card
         card_player = deck_player.get()
         screen.blit(pygame.transform.scale(getattr(Cards, card_player), (card_width, card_height)), (player_width, player_height))
 
@@ -201,32 +205,39 @@ def game():
 
         pygame.display.update()
 
+    # show PC name, deck and number of cards in deck
     # draw PC name
     pc_name = font.render("PC", True, (255, 255, 255))
     pygame.draw.rect(screen, (62, 161, 87), (deck_pc_width + card_width/2 - 10, 3, 20, 15))
     screen.blit(pc_name, (deck_pc_width + card_width/2 - 10, 1))
 
+    # show PC deck
     if not deck_pc.empty():
         screen.blit(pygame.transform.scale(back_blue, (card_width, card_height)), (deck_pc_width, deck_pc_height))
 
+    # show PC number of cards in deck
     deck_pc_size = font.render("Cards in deck: "+str(deck_pc.qsize()), True, (255, 255, 255))
     pygame.draw.rect(screen, (62, 161, 87), (deck_pc_width-15, deck_pc_height + card_height + 7, card_width+30, 20))
     screen.blit(deck_pc_size, (deck_pc_width-15, deck_pc_height + card_height + 7))
 
+    # show PLAYER name, deck and number of cards in deck
     # draw PLAYER name
     player_name = font.render("PLAYER", True, (255, 255, 255))
     pygame.draw.rect(screen, (62, 161, 87), (deck_player_width + card_width / 2 - 30, screen.get_height() - 18, 60, 15))
     screen.blit(player_name, (deck_player_width + card_width / 2 - 30, screen.get_height() - 19))
 
+    # show PLAYER deck
     if not deck_player.empty():
         screen.blit(pygame.transform.scale(back_blue, (card_width, card_height)), (deck_player_width, deck_player_height))
 
+    # show PLAYER number of cards in deck
     deck_player_size = font.render("Cards in deck: " + str(deck_player.qsize()), True, (255, 255, 255))
     pygame.draw.rect(screen, (62, 161, 87), (deck_player_width - 15, deck_player_height - 27, card_width + 30, 20))
     screen.blit(deck_player_size, (deck_player_width - 15, deck_player_height - 27))
 
     pygame.display.update()
 
+    # comparison between cards and war scenario
     if not first:
         if values[card_pc] > values[card_player]:
             if war == 0:
@@ -282,11 +293,13 @@ def game():
                     deck_war.put(card_player)
                     deck_war.put(card_pc)
 
+    # show on the screen when a war starts
     if war:
         war_started = font_war.render("W A R", True, (219, 22, 22))
         pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.4, screen.get_height()*0.32, 160, 60))
         screen.blit(war_started, (screen.get_width() * 0.4, screen.get_height()*0.32))
 
+        # show the size of the war
         war_size2 = war_size - int(deck_war.qsize()/2) + 1
         if war_size2 <= war_size:
             if war_size2 > 9:
@@ -298,6 +311,7 @@ def game():
                 pygame.draw.rect(screen, (62, 161, 87), (screen.get_width() * 0.38, screen.get_height() * 0.38, 190, 100))
                 screen.blit(war_started_size, (screen.get_width() * 0.475, screen.get_height() * 0.40))
 
+    # show war winner
     if war_winner:
         if war_winner == "PC":
             war_winner_name = font_war.render(war_winner + " WINS WAR", True, (219, 22, 22))
@@ -329,6 +343,7 @@ war_winner = ""
 first = False
 winner = ""
 
+# the start screen
 screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
 
 title = font_title.render("W A R", True, (255, 255, 255))
@@ -341,6 +356,7 @@ screen.blit(title, (screen.get_width() * 0.37, screen.get_height() * 0.8))
 
 pygame.display.update()
 
+# game loop
 while 1:
     event = pygame.event.wait()
     if event.type == QUIT:
@@ -355,6 +371,7 @@ while 1:
                 game()
                 show_score()
 
+    # match loop
     while not deck_pc.empty() and not deck_player.empty():
         pygame.event.pump()
         event = pygame.event.wait()
@@ -364,7 +381,7 @@ while 1:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 or event.button == 4 or event.button == 5:  # event.button == 4 and 5 are for testing purposes only
                 x, y = pygame.mouse.get_pos()
-                if 330 <= x <= 470 and 601 <= y <= 775:
+                if 330 <= x <= 470 and 601 <= y <= 775:  # position of player deck
                     first = False
                     game()
                     show_score()
@@ -380,6 +397,7 @@ while 1:
             score_PC += 1
             break
 
+    # play again screen
     while winner:
         screen.blit(pygame.transform.scale(bg, screen.get_size()), (0, 0))
 
